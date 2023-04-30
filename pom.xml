@@ -55,7 +55,7 @@
         </dependency>
 <!-- swagger  -->
 
-<!--        security 종속성-->
+        <!--security 종속성-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -64,11 +64,13 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
         </dependency>
-
-        <!--        security 종속성-->
-
-
-
+        <!--security 종속성-->
+        <!--jwt 종속성-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
 <!--암호화 종속성-->
         <dependency>
             <groupId>org.jasypt</groupId>

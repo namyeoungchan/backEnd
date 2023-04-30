@@ -40,8 +40,21 @@ public class UserContreoller {
         Map<String,Object> result = new HashMap<>();
         Map<String,Object> loginInfo = new HashMap<>();
 
-        loginInfo.put("loginId",User.get("loginId"));
-        loginInfo.put("loginPw",User.get("loginPw"));
+        loginInfo.put("loginId",User.get("username"));
+        loginInfo.put("loginPw",User.get("password"));
+        System.out.println("user"+User);
+        result = userservice.login(loginInfo);
+
+        return result;
+    }
+    @RequestMapping("/home")
+    public Map<String, Object>Home(@RequestBody Map<String,Object>User){
+        Map<String,Object> result = new HashMap<>();
+        Map<String,Object> loginInfo = new HashMap<>();
+
+        loginInfo.put("loginId",User.get("username"));
+        loginInfo.put("loginPw",User.get("password"));
+        System.out.println("user"+User);
         result = userservice.login(loginInfo);
 
         return result;

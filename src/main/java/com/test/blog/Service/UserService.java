@@ -8,7 +8,14 @@ import com.test.blog.common.ValidationChk;
 import com.test.blog.entity.LoginStatus;
 import com.test.blog.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+
+import javax.management.remote.JMXAuthenticator;
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @Service
@@ -22,6 +29,8 @@ public class UserService {
     private ValidationChk validationChk;
     @Autowired
     private AESEncrypt aesEncrypt;
+
+    JMXAuthenticator authenticationManager;
 
 
     public Map<String, Object> saveUser(User user) {
@@ -81,7 +90,10 @@ public class UserService {
             return result;
         }
 
+<<<<<<< Updated upstream
         System.out.println("asefawefawefeaw");
+=======
+>>>>>>> Stashed changes
             result.put("result","success");
             result.put("code","200");
             result.put("LoginID",user.getLoginId());
@@ -155,10 +167,14 @@ public class UserService {
         System.out.println("loginPw:::"+loginPw);
         System.out.println("userPw:::"+userPw);
         if(loginPw.equals(userPw)){
-            /**로그인 성공 인증 권한 부여 필요**/
             try{loginRepository.deleteLoginStatus(loginStatus.get().getUserId());
             }catch (Exception e){
                 System.out.println(e);
+            }
+            try{
+                /**로그인 성공 인증 권한 부여 필요**/
+            }catch (Exception e){
+
             }
             result.put("result","success");
             result.put("code","200");
