@@ -8,18 +8,17 @@ import com.test.blog.common.ValidationChk;
 import com.test.blog.entity.LoginStatus;
 import com.test.blog.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.management.remote.JMXAuthenticator;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService{
 
     @Autowired
     private UserRepository userRepository;
@@ -29,8 +28,6 @@ public class UserService {
     private ValidationChk validationChk;
     @Autowired
     private AESEncrypt aesEncrypt;
-
-    JMXAuthenticator authenticationManager;
 
 
     public Map<String, Object> saveUser(User user) {
@@ -66,7 +63,6 @@ public class UserService {
             return result;
         }
    /****패스워드 암호화 ********/
-//   user.setPw(aesEncrypt.encrypt(user.getPw()));
         Map<String,Object> password = new HashMap<>();
         Map<String,Object> userPw = new HashMap<>();
         userPw.put("pw",user.getPw());
@@ -78,8 +74,6 @@ public class UserService {
              System.out.println("회원가입 비밀번호 암호화");
          }
    /****!패스워드 암호화 *******/
-
-
         try{
             userRepository.save(user);
         }catch(Exception e){
@@ -90,10 +84,6 @@ public class UserService {
             return result;
         }
 
-<<<<<<< Updated upstream
-        System.out.println("asefawefawefeaw");
-=======
->>>>>>> Stashed changes
             result.put("result","success");
             result.put("code","200");
             result.put("LoginID",user.getLoginId());
@@ -102,7 +92,7 @@ public class UserService {
         return result;
     }
     public boolean chkUser(User user){
-        Optional<User> chkUser = Optional.of(new User());;
+        User chkUser = new User();
         chkUser = userRepository.findByLoginId(user.getLoginId());
         boolean result = false;
         if(chkUser.equals(Optional.empty())){
@@ -113,6 +103,12 @@ public class UserService {
 
         return result;
     }
+    public User providerChkUser(String name){
+        User chkUser = new User();
+        chkUser = userRepository.findByLoginId(name);
+
+        return chkUser;
+    }
 
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
@@ -122,11 +118,10 @@ public class UserService {
         Map<String,Object>result = new HashMap<>();
         Optional<LoginStatus> loginStatus = Optional.of(new LoginStatus());
         String loginId = user.get("loginId").toString();
-//        Map<String,Object> loginPw = new HashMap<>();
         String loginPw="";
         String userPw ="";
         Long userId;
-        Optional<User> chkUser = Optional.of(new User());
+        User chkUser = new User();
         chkUser = userRepository.findByLoginId(loginId);
         if(chkUser.equals(Optional.empty())){
             result.put("result","fail");
@@ -134,13 +129,13 @@ public class UserService {
             result.put("message","없는회원입니다.");
             return result;
         }else{
-            userPw = chkUser.get().getPw();
-            userId = chkUser.get().getUserId();
+            userPw = chkUser.getPw();
+            userId = chkUser.getUserId();
         }
         try{
 //            loginPw = aesEncrypt.getEncrypt(user.get("loginPw").toString(),chkUser.get().getSaltCode().getBytes());
 
-            loginPw = aesEncrypt.chkPw(user.get("loginPw").toString(),chkUser.get().getSaltCode());
+            loginPw = aesEncrypt.chkPw(user.get("loginPw").toString(),chkUser.getSaltCode());
         }catch (Exception e){
             System.out.println(e);
             System.out.println("saltCode가 존재하지않습니다.");
@@ -162,8 +157,6 @@ public class UserService {
         }catch(Exception e){
             System.out.println("첫 로그인 실패 :"+e);
         }
-        /**블락 여부 체크**/
-        /**암복호화 후 로그인 로직 추가 해야됨**/
         System.out.println("loginPw:::"+loginPw);
         System.out.println("userPw:::"+userPw);
         if(loginPw.equals(userPw)){
@@ -213,5 +206,17 @@ public class UserService {
 
 
 
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByLoginId(username);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        return new org.springframework.security.core.userdetails.User(user.getLoginId(), user.getPw(), authorities);
     }
 }

@@ -1,25 +1,37 @@
 package com.test.blog;
 
 
+import com.test.blog.SecurityHandler.CustomAuthenticationProvider;
 import com.test.blog.SecurityHandler.CustomLogoutSuccessHandler;
 import com.test.blog.SecurityHandler.LoginFailureHandler;
 import com.test.blog.SecurityHandler.LoginSuccessHandler;
+import com.test.blog.Service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CustomAuthenticationProvider customAuthenticationProvider;
+
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // ...
         http.csrf().disable().authorizeRequests()
-                .antMatchers("/login", "/signIn","/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs", "/webjars/**").permitAll() // 스웨거 접근 , 로그인 , 회원가입 접근가능 설정
+//                .antMatchers("/login", "/signIn","/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs", "/webjars/**").permitAll() // 스웨거 접근 , 로그인 , 회원가입 접근가능 설정
+                .antMatchers("/login", "/signIn").permitAll() // 스웨거 접근 , 로그인 , 회원가입 접근가능 설정
                 .anyRequest().authenticated() // 로그인한 사용자만 접근 가능한 페이지 설정
                 .and()
                 .formLogin()
@@ -34,4 +46,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessHandler(new CustomLogoutSuccessHandler() {
                 }); // 로그아웃 성공 시 호출되는 핸들러
     }
+
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(customAuthenticationProvider);
+        auth.userDetailsService(userService).passwordEncoder(NoOpPasswordEncoder.getInstance());
+
+    }
+
 }

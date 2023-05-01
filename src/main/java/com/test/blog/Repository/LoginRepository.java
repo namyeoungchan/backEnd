@@ -14,8 +14,6 @@ import java.util.Optional;
 @Repository
 public interface LoginRepository extends JpaRepository<LoginStatus,Long> {
     Optional<LoginStatus> findByUserId(Long userId);
-
-
     @Modifying
     @Transactional
     @Query("UPDATE LoginStatus l SET l.failCnt = l.failCnt + 1 ,l.lastTry = now() WHERE l.userId = :userId")

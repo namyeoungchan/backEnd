@@ -20,5 +20,14 @@ public class User {
     private String saltCode;
     private String pw2;
 
+//    @Builder
+//    public user(Long userId , String loginId, String pw , String saltCode, String pw2){
+//        this.userId = userId;
+//        this.loginId = loginId;
+//        this.pw = pw ;
+//        this.saltCode = saltCode;
+//        this.pw2 = pw2;
+//
+//    }
 
 }
