@@ -30,8 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // ...
         http.csrf().disable().authorizeRequests()
-//                .antMatchers("/login", "/signIn","/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs", "/webjars/**").permitAll() // 스웨거 접근 , 로그인 , 회원가입 접근가능 설정
-                .antMatchers("/login", "/signIn").permitAll() // 스웨거 접근 , 로그인 , 회원가입 접근가능 설정
+//                .antMatchers("/login","/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs", "/webjars/**").permitAll() // 스웨거 접근 , 로그인 , 회원가입 접근가능 설정
+                .antMatchers("/login").permitAll() // 스웨거 접근 , 로그인 , 회원가입 접근가능 설정
                 .anyRequest().authenticated() // 로그인한 사용자만 접근 가능한 페이지 설정
                 .and()
                 .formLogin()
@@ -50,8 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(customAuthenticationProvider);
-        auth.userDetailsService(userService).passwordEncoder(NoOpPasswordEncoder.getInstance());
+        auth.authenticationProvider(customAuthenticationProvider).userDetailsService(userService).passwordEncoder(NoOpPasswordEncoder.getInstance());
 
     }
 

@@ -123,7 +123,7 @@ public class UserService implements UserDetailsService{
         Long userId;
         User chkUser = new User();
         chkUser = userRepository.findByLoginId(loginId);
-        if(chkUser.equals(Optional.empty())){
+        if(chkUser==null){
             result.put("result","fail");
             result.put("code","04");
             result.put("message","없는회원입니다.");
