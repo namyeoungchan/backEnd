@@ -10,12 +10,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Component
@@ -34,7 +34,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String password ="";
 
         try{
-            System.out.println("그니까 왜 반복해");
             username=authentication.getPrincipal().toString();
             password=authentication.getCredentials().toString();
 
@@ -45,12 +44,17 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         // 사용자 정보를 DB에서 가져와서 인증 처리
         User user = new User();
             user = userService.providerChkUser(username);
-
+        System.out.println("username");
+        System.out.println(username);
 //             user = userOptional.orElseThrow(() -> new BadCredentialsException("Invalid username/password"));
             Map <String , Object> loginInfo = new HashMap<>();
             loginInfo.put("loginId",username);
             loginInfo.put("loginPw",password);
+            Map<String ,Object> result = new HashMap<>();
+            result = userService.login(loginInfo);
+        System.out.println(result.get("result"));
             if(userService.login(loginInfo).get("code")=="200"){
+
                 LoginSession userDetail = new LoginSession();
                 WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
                 String sessionId = details.getSessionId();
@@ -59,16 +63,17 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 userDetail.setSessionId(sessionId);
                 userDetail.setLoginIp(ipAddress);
                 loginSessionRepository.save(userDetail);
+
             }else{
                 throw new BadCredentialsException("Invalid username/password");
             }
 
-
-
         // 사용자 정보가 맞으면 인증 완료 후 Authentication 객체 반환
-        return new UsernamePasswordAuthenticationToken(user, username,authentication.getAuthorities());
-//        System.out.println("");
-//        return new UsernamePasswordAuthenticationToken(user,authentication.getCredentials());
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return new UsernamePasswordAuthenticationToken(user, username,authorities);
     }
 
     @Override

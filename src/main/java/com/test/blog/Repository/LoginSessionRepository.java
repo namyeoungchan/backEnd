@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LoginSessionRepository extends JpaRepository<LoginSession,Long> {
+    LoginSession findBySessionId(String SessionId);
 }

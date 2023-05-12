@@ -2,12 +2,15 @@ package com.test.blog.Service;
 
 
 import com.test.blog.Repository.LoginRepository;
+import com.test.blog.Repository.LoginSessionRepository;
 import com.test.blog.Repository.UserRepository;
 import com.test.blog.common.AESEncrypt;
 import com.test.blog.common.ValidationChk;
+import com.test.blog.entity.LoginSession;
 import com.test.blog.entity.LoginStatus;
 import com.test.blog.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.net.Authenticator;
 import java.util.*;
 
 @Service
@@ -28,6 +32,8 @@ public class UserService implements UserDetailsService{
     private ValidationChk validationChk;
     @Autowired
     private AESEncrypt aesEncrypt;
+    @Autowired
+    private  LoginSessionRepository loginSessionRepository;
 
 
     public Map<String, Object> saveUser(User user) {
@@ -114,15 +120,32 @@ public class UserService implements UserDetailsService{
         userRepository.deleteById(id);
     }
 
+    public Map<String,Object> chkSession(String sessionId){
+        Map<String,Object> result = new HashMap<>();
+        Optional<LoginSession> chkUser = Optional.of(new LoginSession());
+         chkUser = Optional.ofNullable(loginSessionRepository.findBySessionId(sessionId));
+        if(chkUser.isEmpty()){
+            result.put("result","fail");
+        } else{
+            result.put("result","success");
+        }
+
+        return result;
+    }
+
+
     public Map<String,Object> login(Map<String, Object> user){
         Map<String,Object>result = new HashMap<>();
         Optional<LoginStatus> loginStatus = Optional.of(new LoginStatus());
+
         String loginId = user.get("loginId").toString();
+        System.out.println(loginId);
         String loginPw="";
         String userPw ="";
         Long userId;
         User chkUser = new User();
         chkUser = userRepository.findByLoginId(loginId);
+
         if(chkUser==null){
             result.put("result","fail");
             result.put("code","04");
@@ -155,7 +178,7 @@ public class UserService implements UserDetailsService{
             return result;
         }
         }catch(Exception e){
-            System.out.println("첫 로그인 실패 :"+e);
+            System.out.println(e);
         }
         System.out.println("loginPw:::"+loginPw);
         System.out.println("userPw:::"+userPw);
@@ -165,9 +188,10 @@ public class UserService implements UserDetailsService{
                 System.out.println(e);
             }
             try{
+
                 /**로그인 성공 인증 권한 부여 필요**/
             }catch (Exception e){
-
+                System.out.println(e);
             }
             result.put("result","success");
             result.put("code","200");
