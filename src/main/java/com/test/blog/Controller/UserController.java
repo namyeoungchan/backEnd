@@ -3,18 +3,20 @@ package com.test.blog.Controller;
 import com.test.blog.Service.UserService;
 import com.test.blog.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.net.http.HttpHeaders;
 import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
-public class UserContreoller {
+public class UserController {
 
     @Autowired
     private UserService userservice;
@@ -39,35 +41,30 @@ public class UserContreoller {
 
 
     @PostMapping("/loginUser")
-    public Map<String, Object>Login(HttpServletRequest request,@RequestBody Map<String,Object>User){
+    public ResponseEntity<Map<String, Object>> Login(@RequestBody Map<String,Object>User){
         Map<String,Object> result = new HashMap<>();
-
+        // 응답 헤더에 세션 ID 추가
+        HttpHeaders headers = new HttpHeaders();
         Map<String,Object> loginInfo = new HashMap<>();
         System.out.println(User.get("username"));
         System.out.println(User.get("password"));
         loginInfo.put("loginId",User.get("username"));
         loginInfo.put("loginPw",User.get("password"));
         result = userservice.login(loginInfo);
-        return result;
+        headers.add("Set-Cookie", "JSESSIONID=" + result.get("sessionId") + "; Path=/; Secure; HttpOnly");
+        System.out.println(result.get("sessionId"));
+
+        return ResponseEntity.ok().headers(headers).body(result);
     }
-    @GetMapping("/home")
-    public Map<String, Object>Home(@RequestBody Map<String,Object>User){
-        Map<String,Object> result = new HashMap<>();
-        Map<String,Object> loginInfo = new HashMap<>();
 
-        loginInfo.put("loginId",User.get("username"));
-        loginInfo.put("loginPw",User.get("password"));
-
-        result = userservice.login(loginInfo);
-
-        return result;
-    }
     @GetMapping("/chkSession")
     public Map<String, Object>chkStatus(HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
-        String sessionId = request.getSession().toString();
-        System.out.println(sessionId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // WebAuthenticationDetails를 사용하여 세션 ID 확인
+        String sessionId = ((WebAuthenticationDetails) authentication.getDetails()).getSessionId();
         result = userservice.chkSession(sessionId);
+        System.out.println(result);
         return result;
     }
 

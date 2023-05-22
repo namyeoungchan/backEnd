@@ -10,14 +10,22 @@ import com.test.blog.entity.LoginSession;
 import com.test.blog.entity.LoginStatus;
 import com.test.blog.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.net.Authenticator;
 import java.util.*;
 
@@ -126,8 +134,10 @@ public class UserService implements UserDetailsService{
          chkUser = Optional.ofNullable(loginSessionRepository.findBySessionId(sessionId));
         if(chkUser.isEmpty()){
             result.put("result","fail");
+            result.put("code","04");
         } else{
             result.put("result","success");
+            result.put("code","01");
         }
 
         return result;
@@ -188,11 +198,42 @@ public class UserService implements UserDetailsService{
                 System.out.println(e);
             }
             try{
+                // 인증 객체 생성
+                List<GrantedAuthority> authorities = new ArrayList<>();
+                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+//                Authentication authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+//                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+//                securityContext.setAuthentication(authentication);
+//                SecurityContextHolder.setContext(securityContext);
+                // SecurityContext에 인증 객체 설정
 
+                // 세션 설정
+                ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                HttpServletRequest request = requestAttributes.getRequest();
+                HttpSession session = request.getSession(true); // 세션을 가져오거나 새로 생성합니다.
+                // 세션에 인증 객체 설정
+                Authentication authentication = (Authentication) session.getAttribute("SPRING_SECURITY_CONTEXT");
+                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                securityContext.setAuthentication(authentication);
+
+                SecurityContextHolder.setContext(securityContext);
+//                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+                LoginSession userDetail = new LoginSession();
+                String sessionId = session.getId();
+                String ipAddress = request.getRemoteAddr();
+                userDetail.setUserId(chkUser.getUserId());
+                userDetail.setSessionId(sessionId);
+                userDetail.setLoginIp(ipAddress);
+                loginSessionRepository.save(userDetail);
+                result.put("sessionId",sessionId);
                 /**로그인 성공 인증 권한 부여 필요**/
+
             }catch (Exception e){
                 System.out.println(e);
             }
+
             result.put("result","success");
             result.put("code","200");
             result.put("message","로그인 성공");

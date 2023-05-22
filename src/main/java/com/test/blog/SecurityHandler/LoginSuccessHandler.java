@@ -39,6 +39,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 //        }
         WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
         String ipAddress = details.getRemoteAddress();
+        System.out.println("로그인 성공!");
         httpSession = request.getSession(true);
         httpSession.setAttribute("userId", authentication.getPrincipal());
         httpSession.setAttribute("sessionId", httpSession.getId());
