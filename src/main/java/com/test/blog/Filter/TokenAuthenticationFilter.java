@@ -32,7 +32,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String requestUrl = request.getRequestURI();
 
         // 특정 URL을 거치지 않도록 설정
-        if ("/loginUser".equals(requestUrl)) {
+        System.out.println(requestUrl);
+        if ("/loginUser".equals(requestUrl) ||"/signIn".equals(requestUrl)||"/favicon.ico".equals(requestUrl)
+                ||"/login".equals(requestUrl)||"/swagger-ui.html".equals(requestUrl)) {
             // 특정 URL은 필터를 거치지 않고 진행
             filterChain.doFilter(request, response);
             return;
@@ -45,26 +47,27 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
              sessionId = request.getHeader("Authorization");
             sessionId = sessionId.substring(sessionId.lastIndexOf(" ")+1);
+            System.out.println("sessionId::::::"+sessionId);
             result = userService.chkSession(sessionId);
+            System.out.println("sessionAuth");
+            System.out.println(result.get("result"));
             if (result.get("result").equals("success")){
                 // 인증 성공
                 // SecurityContextHolder에 인증된 세션 저장
                 Authentication authentication = new UsernamePasswordAuthenticationToken(sessionId, null);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
-                return;
             } else {
                 // 인증 실패
                 // SecurityContextHolder의 인증 정보 제거
+                System.out.println("인증실패 ::::::::");
+                System.out.println(sessionId);
                 SecurityContextHolder.clearContext();
             }
         }catch(Exception e){
-
+            System.out.println("세션인증 오류입니다. :::TokenAuthenticationFilter Error");
         }
 
-        // SecurityContextHolder의 세션 아이디와 비교하여 인증 확인
-
-
-            filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 }

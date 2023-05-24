@@ -29,9 +29,13 @@ public class UserController {
         userInfo.setPw(User.get("userPw").toString());
         boolean chk = userservice.chkUser(userInfo);;
         if(chk){
+            System.out.println("chk");
+            System.out.println(chk);
             result =userservice.saveUser(userInfo);
+
             return result;
         }else{
+            System.out.println("testast");
             result.put("result","error");
             result.put("code","400");
             result.put("message","이미 존재하는 아이디입니다.");
@@ -60,11 +64,12 @@ public class UserController {
     @GetMapping("/chkSession")
     public Map<String, Object>chkStatus(HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // WebAuthenticationDetails를 사용하여 세션 ID 확인
-        String sessionId = ((WebAuthenticationDetails) authentication.getDetails()).getSessionId();
-        result = userservice.chkSession(sessionId);
-        System.out.println(result);
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        // WebAuthenticationDetails를 사용하여 세션 ID 확인
+//        System.out.println(request.getSession().getId());
+//        String sessionId = ((WebAuthenticationDetails) authentication.getDetails()).getSessionId();
+//        result = userservice.chkSession(sessionId);
+//        System.out.println(result);
         return result;
     }
 

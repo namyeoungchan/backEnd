@@ -109,7 +109,7 @@ public class UserService implements UserDetailsService{
         User chkUser = new User();
         chkUser = userRepository.findByLoginId(user.getLoginId());
         boolean result = false;
-        if(chkUser.equals(Optional.empty())){
+        if(chkUser==null){
             result =true;
         }else{
             result = false;

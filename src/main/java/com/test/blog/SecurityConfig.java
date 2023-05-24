@@ -2,7 +2,7 @@ package com.test.blog;
 
 
 import com.test.blog.Filter.TokenAuthenticationFilter;
-//import com.test.blog.SecurityHandler.CustomAuthenticationProvider;
+import com.test.blog.SecurityHandler.CustomAuthenticationProvider;
 import com.test.blog.SecurityHandler.CustomLogoutSuccessHandler;
 import com.test.blog.SecurityHandler.LoginFailureHandler;
 import com.test.blog.SecurityHandler.LoginSuccessHandler;
@@ -31,8 +31,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserService userService;
-//    @Autowired
-//    private CustomAuthenticationProvider customAuthenticationProvider;
+    @Autowired
+    private CustomAuthenticationProvider customAuthenticationProvider;
 
     public SecurityConfig(UserService userService) {
         this.userService = userService;
@@ -68,6 +68,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성 정책 설정
                 .and()
+                .formLogin()
+                .loginProcessingUrl("/login") // 로그인 폼에서 로그인 버튼을 누르면 호출되는 URL
+                .usernameParameter("username") // 로그인 폼에서 입력받는 사용자 ID 파라미터 이름
+                .passwordParameter("password") // 로그인 폼에서 입력받는 사용자 비밀번호 파라미터 이름
+                .successHandler(new LoginSuccessHandler()) // 로그인 성공 시 호출되는 핸들러
+                .failureHandler(new LoginFailureHandler()) // 로그인 실패 시 호출되는 핸들러
+                .and()
                 // 필터 설정
                 .addFilterBefore(new TokenAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter.class)
 //                .addFilterBefore(new TokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -77,11 +84,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 }); // 로그아웃 성공 시 호출되는 핸들러
     }
 
-//
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.authenticationProvider(customAuthenticationProvider).userDetailsService(userService).passwordEncoder(NoOpPasswordEncoder.getInstance());
-//
-//    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(customAuthenticationProvider).userDetailsService(userService).passwordEncoder(NoOpPasswordEncoder.getInstance());
+
+    }
 
 }
