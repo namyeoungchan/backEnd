@@ -127,6 +127,9 @@ public class UserService implements UserDetailsService{
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }
+    public void deleteSessioinId(String sessionId) {
+        LoginSessionRepository.deleteBySessionId(sessionId);
+    }
 
     public Map<String,Object> chkSession(String sessionId){
         Map<String,Object> result = new HashMap<>();

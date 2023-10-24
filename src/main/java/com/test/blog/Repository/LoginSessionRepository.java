@@ -8,4 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LoginSessionRepository extends JpaRepository<LoginSession,Long> {
     LoginSession findBySessionId(String SessionId);
+
+    public static void deleteBySessionId(String SessionId) {
+
+    }
 }

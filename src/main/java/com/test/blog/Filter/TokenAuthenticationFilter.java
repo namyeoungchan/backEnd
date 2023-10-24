@@ -56,7 +56,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 // SecurityContextHolder에 인증된 세션 저장
                 Authentication authentication = new UsernamePasswordAuthenticationToken(sessionId, null);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                filterChain.doFilter(request, response);
+//                filterChain.doFilter(request, response);
             } else {
                 // 인증 실패
                 // SecurityContextHolder의 인증 정보 제거
@@ -65,7 +65,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.clearContext();
             }
         }catch(Exception e){
-            System.out.println("세션인증 오류입니다. :::TokenAuthenticationFilter Error");
+//            SecurityContextHolder.clearContext();
+            System.out.println("세션인증 오류입니다. :::TokenAuthenticationFilter Error"+e);
         }
 
         filterChain.doFilter(request, response);

@@ -1,8 +1,7 @@
 package com.test.blog.entity;
 
-import lombok.Builder;
+
 import lombok.Data;
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -67,16 +66,6 @@ public class User implements UserDetails {
         return isEnabled();
     }
 
-
-//    @Builder
-//    public user(Long userId , String loginId, String pw , String saltCode, String pw2){
-//        this.userId = userId;
-//        this.loginId = loginId;
-//        this.pw = pw ;
-//        this.saltCode = saltCode;
-//        this.pw2 = pw2;
-//
-//    }
 
 }
 
