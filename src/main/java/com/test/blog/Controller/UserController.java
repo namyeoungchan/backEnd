@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     @Autowired
@@ -46,10 +46,13 @@ public class UserController {
         // 응답 헤더에 세션 ID 추가
         HttpHeaders headers = new HttpHeaders();
         Map<String,Object> loginInfo = new HashMap<>();
+        System.out.println(User.get("username"));
+        System.out.println(User.get("password"));
         loginInfo.put("loginId",User.get("username"));
         loginInfo.put("loginPw",User.get("password"));
         result = userservice.login(loginInfo);
         headers.add("Set-Cookie", "JSESSIONID=" + result.get("sessionId") + "; Path=/; Secure; HttpOnly");
+        System.out.println(result.get("sessionId"));
 
         return ResponseEntity.ok().headers(headers).body(result);
     }
@@ -57,17 +60,18 @@ public class UserController {
     @GetMapping("/chkSession")
     public Map<String, Object>chkStatus(HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
-        // WebAuthenticationDetails를 사용하여 세션 ID 확인
-       String sessionId = request.getSession().getId();
-        result = userservice.chkSession(sessionId);
-        System.out.println(result);
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        // WebAuthenticationDetails를 사용하여 세션 ID 확인
+//        System.out.println(request.getSession().getId());
+//        String sessionId = ((WebAuthenticationDetails) authentication.getDetails()).getSessionId();
+//        result = userservice.chkSession(sessionId);
+//        System.out.println(result);
         return result;
     }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) throws ServletException {
         request.logout();
-        userservice.deleteSessioinId(request.getSession().getId());
         return "redirect:/login";
     }
 

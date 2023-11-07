@@ -140,7 +140,6 @@ public class UserService{
     public Map<String,Object> login(Map<String, Object> user){
         Map<String,Object>result = new HashMap<>();
         Optional<LoginStatus> loginStatus = Optional.of(new LoginStatus());
-
         String loginId = user.get("loginId").toString();
         System.out.println(loginId);
         String loginPw="";

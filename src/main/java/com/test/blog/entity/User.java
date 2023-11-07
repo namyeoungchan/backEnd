@@ -21,6 +21,8 @@ public class User {
     private String saltCode;
     private String pw2;
     private String Authority;
+    @OneToMany
+    private List<GoodsBoard> ino;
 
 
 
