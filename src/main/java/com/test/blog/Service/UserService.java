@@ -10,16 +10,6 @@ import com.test.blog.entity.LoginSession;
 import com.test.blog.entity.LoginStatus;
 import com.test.blog.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -30,7 +20,7 @@ import java.net.Authenticator;
 import java.util.*;
 
 @Service
-public class UserService implements UserDetailsService{
+public class UserService{
 
     @Autowired
     private UserRepository userRepository;
@@ -169,19 +159,13 @@ public class UserService implements UserDetailsService{
             userId = chkUser.getUserId();
         }
         try{
-//            loginPw = aesEncrypt.getEncrypt(user.get("loginPw").toString(),chkUser.get().getSaltCode().getBytes());
-
             loginPw = aesEncrypt.chkPw(user.get("loginPw").toString(),chkUser.getSaltCode());
         }catch (Exception e){
             System.out.println(e);
             System.out.println("saltCode가 존재하지않습니다.");
         }
-//        loginPw = aesEncrypt.aesEncrypt(loginPw).get("encPw").toString();
-
-
-
-
         loginStatus = loginRepository.findByUserId(userId);
+
         /**아이디 블락 여부 체크**/
         try{
             if(loginStatus.get().isBlock()){
@@ -202,25 +186,12 @@ public class UserService implements UserDetailsService{
             }
             try{
                 // 인증 객체 생성
-                List<GrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-//                Authentication authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
-//                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-//                securityContext.setAuthentication(authentication);
-//                SecurityContextHolder.setContext(securityContext);
-                // SecurityContext에 인증 객체 설정
 
                 // 세션 설정
                 ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                 HttpServletRequest request = requestAttributes.getRequest();
                 HttpSession session = request.getSession(true); // 세션을 가져오거나 새로 생성합니다.
                 // 세션에 인증 객체 설정
-                Authentication authentication = (Authentication) session.getAttribute("SPRING_SECURITY_CONTEXT");
-                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                securityContext.setAuthentication(authentication);
-
-                SecurityContextHolder.setContext(securityContext);
 //                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
                 LoginSession userDetail = new LoginSession();
@@ -276,15 +247,4 @@ public class UserService implements UserDetailsService{
 
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByLoginId(username);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        return new org.springframework.security.core.userdetails.User(user.getLoginId(), user.getPw(), authorities);
-    }
 }
