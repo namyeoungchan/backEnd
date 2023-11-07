@@ -1,4 +1,5 @@
 package com.test.blog.Enum;
 
-public class Role {
+public enum Role {
+    TEST,TESTSET,EEEE
 }
