@@ -1,17 +1,17 @@
 package com.test.blog.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Data
 @Entity
-@NoArgsConstructor
+@Builder
 @Table(name ="LoginStatus" ,schema = "web")
 public class LoginStatus {
 
@@ -23,6 +23,12 @@ public class LoginStatus {
     @CreationTimestamp
     private Date lastTry;
 
+    public LoginStatus(final Long userId,final int failCnt,final boolean block , final Date lastTry){
+        this.userId = userId;
+        this.failCnt = failCnt;
+        this.block = block;
+        this.lastTry = lastTry;
 
+    }
 
 }

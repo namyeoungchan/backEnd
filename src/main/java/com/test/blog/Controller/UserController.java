@@ -18,17 +18,15 @@ public class UserController {
     private UserService userservice;
 
     @PostMapping("/signIn")
-    public Map<String, Object> SignIn(@RequestBody Map<String,Object>User){
-        User userInfo = new User();
+    public Map<String, Object> SignIn(@RequestBody User user){
+        User userInfo = User.builder()
+                .loginId(user.getLoginId())
+                .pw(user.getPw())
+                .build();
         Map<String, Object> result = new HashMap<>();
-        userInfo.setLoginId(User.get("userId").toString());
-        userInfo.setPw(User.get("userPw").toString());
         boolean chk = userservice.chkUser(userInfo);;
         if(chk){
-            System.out.println("chk");
-            System.out.println(chk);
             result =userservice.saveUser(userInfo);
-
             return result;
         }else{
             System.out.println("testast");

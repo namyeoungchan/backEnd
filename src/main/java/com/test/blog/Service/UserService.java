@@ -16,7 +16,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.net.Authenticator;
 import java.util.*;
 
 @Service
@@ -68,15 +67,8 @@ public class UserService{
         }
    /****패스워드 암호화 ********/
         Map<String,Object> password = new HashMap<>();
-        Map<String,Object> userPw = new HashMap<>();
-        userPw.put("pw",user.getPw());
-         password = aesEncrypt.aesEncrypt(userPw);
-         try{
-             user.setPw(password.get("encPw").toString());
-             user.setSaltCode(password.get("salt").toString());
-         }catch (Exception e){
-             System.out.println("회원가입 비밀번호 암호화");
-         }
+        User userpw = User.builder().pw(password.get("encPw").toString()).saltCode(password.get("salt").toString()).build();
+
    /****!패스워드 암호화 *******/
         try{
             userRepository.save(user);
@@ -96,8 +88,7 @@ public class UserService{
         return result;
     }
     public boolean chkUser(User user){
-        User chkUser = new User();
-        chkUser = userRepository.findByLoginId(user.getLoginId());
+        User chkUser = userRepository.findByLoginId(user.getLoginId());
         boolean result = false;
         if(chkUser==null){
             result =true;
@@ -108,8 +99,7 @@ public class UserService{
         return result;
     }
     public User providerChkUser(String name){
-        User chkUser = new User();
-        chkUser = userRepository.findByLoginId(name);
+        User chkUser = userRepository.findByLoginId(name);
 
         return chkUser;
     }
@@ -139,15 +129,13 @@ public class UserService{
 
     public Map<String,Object> login(Map<String, Object> user){
         Map<String,Object>result = new HashMap<>();
-        Optional<LoginStatus> loginStatus = Optional.of(new LoginStatus());
 
         String loginId = user.get("loginId").toString();
         System.out.println(loginId);
         String loginPw="";
         String userPw ="";
         Long userId;
-        User chkUser = new User();
-        chkUser = userRepository.findByLoginId(loginId);
+        User chkUser = userRepository.findByLoginId(loginId);
 
         if(chkUser==null){
             result.put("result","fail");
@@ -164,7 +152,7 @@ public class UserService{
             System.out.println(e);
             System.out.println("saltCode가 존재하지않습니다.");
         }
-        loginStatus = loginRepository.findByUserId(userId);
+        Optional<LoginStatus> loginStatus = loginRepository.findByUserId(userId);
 
         /**아이디 블락 여부 체크**/
         try{
@@ -193,13 +181,9 @@ public class UserService{
                 HttpSession session = request.getSession(true); // 세션을 가져오거나 새로 생성합니다.
                 // 세션에 인증 객체 설정
 //                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-                LoginSession userDetail = new LoginSession();
                 String sessionId = session.getId();
                 String ipAddress = request.getRemoteAddr();
-                userDetail.setUserId(chkUser.getUserId());
-                userDetail.setSessionId(sessionId);
-                userDetail.setLoginIp(ipAddress);
+                LoginSession userDetail = new LoginSession().builder().userId(chkUser.getUserId()).sessionId(sessionId).loginIp(ipAddress).build();
                 loginSessionRepository.save(userDetail);
                 result.put("sessionId",sessionId);
                 /**로그인 성공 인증 권한 부여 필요**/
@@ -215,8 +199,7 @@ public class UserService{
         }else{
             /**로그인 실패시 로직**/
             if(loginStatus.isEmpty()){
-                LoginStatus failInfo = new LoginStatus();
-                failInfo.setUserId(userId);
+                LoginStatus failInfo = LoginStatus.builder().userId(userId).build();
                 loginRepository.save(failInfo);
                 result.put("result","fail");
                 result.put("code","400");
