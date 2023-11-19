@@ -129,7 +129,6 @@ public class UserService{
 
     public Map<String,Object> login(Map<String, Object> user){
         Map<String,Object>result = new HashMap<>();
-
         String loginId = user.get("loginId").toString();
         System.out.println(loginId);
         String loginPw="";

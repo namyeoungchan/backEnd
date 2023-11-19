@@ -5,10 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.File;
 import java.util.Date;
 
 @Entity
@@ -18,13 +16,15 @@ import java.util.Date;
 public class Board {
 
     @Id
-    private Long nId;
+    private Long bno;
+    @ManyToOne
+    @JoinColumn(name="user_id", insertable = false, updatable = false)
+    private User userid;
     private String title;
     private String content;
-//    @ManyToOne("")
-//    private Long userId;
-    @CreationTimestamp
-    private Date writeDate;
+    private File file;
+    private String writer;
+    private Date createDate;
 
 
 }

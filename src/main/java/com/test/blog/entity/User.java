@@ -22,6 +22,8 @@ public class User {
     private String saltCode;
     private String pw2;
     private String Authority;
+    @OneToMany
+    private List<GoodsBoard> ino;
 
     public User(final Long userId,final String loginId,final String pw,final String saltCode, final String pw2, final String Authority){
         this.userId = userId;
