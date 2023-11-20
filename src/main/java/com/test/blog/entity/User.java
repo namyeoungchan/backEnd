@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,13 +26,14 @@ public class User {
     @OneToMany
     private List<GoodsBoard> ino;
 
-    public User(final Long userId,final String loginId,final String pw,final String saltCode, final String pw2, final String Authority){
+    public User(final Long userId,final String loginId,final String pw,final String saltCode, final String pw2, final String Authority,final List<GoodsBoard> ino){
         this.userId = userId;
         this.loginId = loginId;
         this.pw = pw;
         this.saltCode = saltCode;
         this.pw2 = pw2;
         this.Authority = Authority;
+        this.ino = ino;
     }
 
     public User() {
