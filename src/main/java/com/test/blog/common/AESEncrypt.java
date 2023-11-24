@@ -1,4 +1,5 @@
 package com.test.blog.common;
+import com.test.blog.entity.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
@@ -19,7 +20,7 @@ import java.util.Map;
 @Component
 public class AESEncrypt {
 
-    public Map<String,Object> aesEncrypt(Map<String, Object> pw) {
+    public Map<String,Object> aesEncrypt(User pw) {
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
         SaltGenerator saltGenerator = new RandomSaltGenerator();
@@ -38,14 +39,14 @@ public class AESEncrypt {
         encryptor.setConfig(config);
         encryptor.setSaltGenerator(new StringFixedSaltGenerator(sb.toString()));
         Map<String,Object> password = new HashMap<>();
-        password.put("encPw",encryptor.encrypt(pw.get("pw").toString()));
+        password.put("encPw",encryptor.encrypt(pw.getPw()));
         password.put("salt",sb.toString());
 
         return password;
 
     }
 
-    public String chkPw(String pw , String salt){
+    public String chkPw(User user){
         // 암호화에 사용할 키 설정
 
         String password = "papar_upa";
@@ -60,16 +61,17 @@ public class AESEncrypt {
         // 암호화 객체 생성
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         encryptor.setConfig(config);
-        encryptor.setSaltGenerator(new StringFixedSaltGenerator(salt));
+
+        encryptor.setSaltGenerator(new StringFixedSaltGenerator(user.getSaltCode()));
         // 암호화 할 문자열
-        String input = pw;
+        String input = user.getPw();
 
         // 암호화
         String encrypted = encryptor.encrypt(input);
 
         // 결과 출력
         System.out.println("Input: " + input);
-        System.out.println("Salt: " + new String(salt));
+        System.out.println("Salt: " + new String(user.getSaltCode()));
         System.out.println("Encrypted: " + encrypted);
         return encrypted;
     }

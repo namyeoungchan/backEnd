@@ -67,11 +67,13 @@ public class UserService{
         }
    /****패스워드 암호화 ********/
         Map<String,Object> password = new HashMap<>();
-        User userpw = User.builder().pw(password.get("encPw").toString()).saltCode(password.get("salt").toString()).build();
+        password = aesEncrypt.aesEncrypt(user);
+        User userpw = User.builder().loginId(user.getLoginId()).pw(password.get("encPw").toString()).saltCode(password.get("salt").toString()).build();
 
    /****!패스워드 암호화 *******/
         try{
-            userRepository.save(user);
+
+            userRepository.save(userpw);
         }catch(Exception e){
             System.out.println(e);
             result.put("result","fail");
@@ -98,12 +100,6 @@ public class UserService{
 
         return result;
     }
-    public User providerChkUser(String name){
-        User chkUser = userRepository.findByLoginId(name);
-
-        return chkUser;
-    }
-
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }
@@ -127,31 +123,17 @@ public class UserService{
     }
 
 
-    public Map<String,Object> login(Map<String, Object> user){
+    public Map<String,Object> login(User user){
         Map<String,Object>result = new HashMap<>();
-        String loginId = user.get("loginId").toString();
-        System.out.println(loginId);
-        String loginPw="";
-        String userPw ="";
-        Long userId;
-        User chkUser = userRepository.findByLoginId(loginId);
-
+        User chkUser = userRepository.findByLoginId(user.getLoginId());
         if(chkUser==null){
             result.put("result","fail");
             result.put("code","04");
             result.put("message","없는회원입니다.");
             return result;
-        }else{
-            userPw = chkUser.getPw();
-            userId = chkUser.getUserId();
         }
-        try{
-            loginPw = aesEncrypt.chkPw(user.get("loginPw").toString(),chkUser.getSaltCode());
-        }catch (Exception e){
-            System.out.println(e);
-            System.out.println("saltCode가 존재하지않습니다.");
-        }
-        Optional<LoginStatus> loginStatus = loginRepository.findByUserId(userId);
+
+        Optional<LoginStatus> loginStatus = loginRepository.findByUserId(user.getUserId());
 
         /**아이디 블락 여부 체크**/
         try{
@@ -164,9 +146,8 @@ public class UserService{
         }catch(Exception e){
             System.out.println(e);
         }
-        System.out.println("loginPw:::"+loginPw);
-        System.out.println("userPw:::"+userPw);
-        if(loginPw.equals(userPw)){
+        User chkPw =  User.builder().loginId(user.getLoginId()).pw(user.getPw()).saltCode(chkUser.getSaltCode()).build();
+        if(aesEncrypt.chkPw(chkPw).equals(chkUser.getPw())){
             try{loginRepository.deleteLoginStatus(loginStatus.get().getUserId());
             }catch (Exception e){
                 System.out.println(e);
@@ -198,7 +179,7 @@ public class UserService{
         }else{
             /**로그인 실패시 로직**/
             if(loginStatus.isEmpty()){
-                LoginStatus failInfo = LoginStatus.builder().userId(userId).build();
+                LoginStatus failInfo = LoginStatus.builder().userId(user.getUserId()).build();
                 loginRepository.save(failInfo);
                 result.put("result","fail");
                 result.put("code","400");
@@ -207,7 +188,7 @@ public class UserService{
             }else {
                 int failCnt = loginStatus.get().getFailCnt()+1;
                 if(failCnt>=5){
-                    loginRepository.updateBlockChk(userId);
+                    loginRepository.updateBlockChk(user.getUserId());
                 }
                 if(loginStatus.get().isBlock()){
                     result.put("result","fail");

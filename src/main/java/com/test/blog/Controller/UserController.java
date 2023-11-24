@@ -39,14 +39,11 @@ public class UserController {
 
 
     @PostMapping("/loginUser")
-    public ResponseEntity<Map<String, Object>> Login(@RequestBody Map<String,Object>User){
+    public ResponseEntity<Map<String, Object>> Login(@RequestBody User user){
         Map<String,Object> result = new HashMap<>();
         // 응답 헤더에 세션 ID 추가
         HttpHeaders headers = new HttpHeaders();
-        Map<String,Object> loginInfo = new HashMap<>();
-        loginInfo.put("loginId",User.get("username"));
-        loginInfo.put("loginPw",User.get("password"));
-        result = userservice.login(loginInfo);
+        result = userservice.login(user);
         headers.add("Set-Cookie", "JSESSIONID=" + result.get("sessionId") + "; Path=/; Secure; HttpOnly");
 
         return ResponseEntity.ok().headers(headers).body(result);
