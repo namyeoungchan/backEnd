@@ -1,9 +1,9 @@
-package com.test.blog.entity;
+package com.test.blog.User.Domain;
 
 
+import com.test.blog.Board.Domain.GoodsBoard;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.java.Log;
 
 import javax.persistence.*;
 import java.util.List;

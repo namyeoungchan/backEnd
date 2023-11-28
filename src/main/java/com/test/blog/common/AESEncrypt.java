@@ -1,19 +1,12 @@
 package com.test.blog.common;
-import com.test.blog.entity.User;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.test.blog.User.Domain.User;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
-import org.jasypt.salt.FixedStringSaltGenerator;
 import org.jasypt.salt.RandomSaltGenerator;
 import org.jasypt.salt.SaltGenerator;
 import org.jasypt.salt.StringFixedSaltGenerator;
-import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.stereotype.Component;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 

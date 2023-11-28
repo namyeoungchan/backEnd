@@ -1,7 +1,7 @@
-package com.test.blog.Controller;
+package com.test.blog.User.Controller;
 
-import com.test.blog.Service.UserService;
-import com.test.blog.entity.User;
+import com.test.blog.User.Service.UserService;
+import com.test.blog.User.Domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +52,6 @@ public class UserController {
     @GetMapping("/chkSession")
     public Map<String, Object>chkStatus(HttpServletRequest request){
         Map<String,Object> result = new HashMap<>();
-        // WebAuthenticationDetails를 사용하여 세션 ID 확인
        String sessionId = request.getSession().getId();
         result = userservice.chkSession(sessionId);
         System.out.println(result);

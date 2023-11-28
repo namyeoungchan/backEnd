@@ -1,8 +1,7 @@
-package com.test.blog.Repository;
+package com.test.blog.User.Repository;
 
 
-import com.test.blog.entity.LoginStatus;
-import com.test.blog.entity.User;
+import com.test.blog.User.Domain.LoginStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

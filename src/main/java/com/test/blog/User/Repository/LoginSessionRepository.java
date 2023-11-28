@@ -1,7 +1,7 @@
-package com.test.blog.Repository;
+package com.test.blog.User.Repository;
 
 
-import com.test.blog.entity.LoginSession;
+import com.test.blog.User.Domain.LoginSession;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

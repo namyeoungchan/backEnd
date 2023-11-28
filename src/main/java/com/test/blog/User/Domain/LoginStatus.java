@@ -1,4 +1,4 @@
-package com.test.blog.entity;
+package com.test.blog.User.Domain;
 
 import lombok.Builder;
 import lombok.Data;

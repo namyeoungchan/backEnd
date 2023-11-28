@@ -1,9 +1,9 @@
-package com.test.blog.entity;
+package com.test.blog.Board.Domain;
 
 
+import com.test.blog.User.Domain.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.io.File;

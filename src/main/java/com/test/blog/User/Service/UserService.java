@@ -1,14 +1,14 @@
-package com.test.blog.Service;
+package com.test.blog.User.Service;
 
 
-import com.test.blog.Repository.LoginRepository;
-import com.test.blog.Repository.LoginSessionRepository;
-import com.test.blog.Repository.UserRepository;
+import com.test.blog.User.Repository.LoginRepository;
+import com.test.blog.User.Repository.LoginSessionRepository;
+import com.test.blog.User.Repository.UserRepository;
 import com.test.blog.common.AESEncrypt;
 import com.test.blog.common.ValidationChk;
-import com.test.blog.entity.LoginSession;
-import com.test.blog.entity.LoginStatus;
-import com.test.blog.entity.User;
+import com.test.blog.User.Domain.LoginSession;
+import com.test.blog.User.Domain.LoginStatus;
+import com.test.blog.User.Domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;

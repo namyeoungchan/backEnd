@@ -1,6 +1,7 @@
-package com.test.blog.entity;
+package com.test.blog.Board.Domain;
 
 
+import com.test.blog.User.Domain.User;
 import lombok.*;
 
 import javax.persistence.*;

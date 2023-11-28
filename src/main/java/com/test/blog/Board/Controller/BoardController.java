@@ -1,4 +1,4 @@
-package com.test.blog.Controller;
+package com.test.blog.Board.Controller;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
