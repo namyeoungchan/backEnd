@@ -29,7 +29,6 @@ public class UserController {
             result =userservice.saveUser(userInfo);
             return result;
         }else{
-            System.out.println("testast");
             result.put("result","error");
             result.put("code","400");
             result.put("message","이미 존재하는 아이디입니다.");
@@ -49,10 +48,9 @@ public class UserController {
         return ResponseEntity.ok().headers(headers).body(result);
     }
 
-    @GetMapping("/chkSession")
-    public Map<String, Object>chkStatus(HttpServletRequest request){
+    @PostMapping("/chkSession")
+    public Map<String, Object>chkStatus(HttpServletRequest request, @RequestBody Map<String,Object> sessionId){
         Map<String,Object> result = new HashMap<>();
-       String sessionId = request.getSession().getId();
         result = userservice.chkSession(sessionId);
         System.out.println(result);
         return result;

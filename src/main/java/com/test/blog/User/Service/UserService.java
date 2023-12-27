@@ -90,6 +90,7 @@ public class UserService{
         return result;
     }
     public boolean chkUser(User user){
+
         User chkUser = userRepository.findByLoginId(user.getLoginId());
         boolean result = false;
         if(chkUser==null){
@@ -107,10 +108,10 @@ public class UserService{
         LoginSessionRepository.deleteBySessionId(sessionId);
     }
 
-    public Map<String,Object> chkSession(String sessionId){
+    public Map<String,Object> chkSession(Map<String,Object> sessionId){
         Map<String,Object> result = new HashMap<>();
         Optional<LoginSession> chkUser = Optional.of(new LoginSession());
-         chkUser = Optional.ofNullable(loginSessionRepository.findBySessionId(sessionId));
+         chkUser = Optional.ofNullable(loginSessionRepository.findBySessionId((String) sessionId.get("sessionId")));
         if(chkUser.isEmpty()){
             result.put("result","fail");
             result.put("code","04");
