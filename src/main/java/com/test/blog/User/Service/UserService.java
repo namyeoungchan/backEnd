@@ -105,7 +105,7 @@ public class UserService{
         userRepository.deleteById(id);
     }
     public void deleteSessioinId(String sessionId) {
-        LoginSessionRepository.deleteBySessionId(sessionId);
+        loginSessionRepository.deleteBySessionId(sessionId);
     }
 
     public Map<String,Object> chkSession(Map<String,Object> sessionId){

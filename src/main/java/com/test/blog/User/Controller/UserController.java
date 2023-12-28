@@ -56,11 +56,10 @@ public class UserController {
         return result;
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpServletRequest request) throws ServletException {
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request , @RequestBody Map<String,Object> sessionId) throws ServletException {
         request.logout();
-        userservice.deleteSessioinId(request.getSession().getId());
-        return "redirect:/login";
+        userservice.deleteSessioinId((String) sessionId.get("sessionId"));
     }
 
 }
